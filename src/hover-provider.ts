@@ -17,7 +17,7 @@ export default class UnityEventReferencesHoverProvider implements HoverProvider 
                 markdown = 'Called by `' + friendlyName(connection.event) + '` from `' + connection.gameObject + '`';
                 const callingClass = connection.callingClass;
                 if (callingClass) {
-                    markdown += ' (`' + friendlyName(connection.callingClass) + '`)';
+                    markdown += '\'s `' + friendlyName(callingClass) + '` component';
                 }
                 markdown += ' in scene `' + connection.scene + '`';
             }

@@ -1,42 +1,59 @@
 import { ParserRuleContext } from "antlr4ts";
 import { AbstractParseTreeVisitor } from "antlr4ts/tree";
+import { performance } from "perf_hooks";
 import { Range, TextDocument, Uri, workspace } from "vscode";
 import { logger } from "./extension";
 import { parseCSharp } from "./parser/CSharpANTLRParser";
 import { Class_definitionContext, Class_member_declarationContext, Field_declarationContext, Method_declarationContext, Namespace_declarationContext, Typed_member_declarationContext } from "./parser/CSharpParser";
 import { CSharpParserVisitor } from "./parser/CSharpParserVisitor";
-import { getConnections, SceneEventConnection } from "./unity-scene-reader";
+import { getConnections, SceneEventConnection, unityMetadataVersion } from "./unity-scene-reader";
 
 let connectedMembers: ConnectedMember[] = [];
 let documentUri: Uri;
 let version = Number.MIN_VALUE;
+let sceneVersion = Number.MIN_VALUE;
 
 export async function findConnectedMembers(document: TextDocument): Promise<ConnectedMember[]> {
-    if (documentUri === document.uri && version === document.version) {
+    if (documentUri === document.uri && version === document.version && sceneVersion === unityMetadataVersion) {
+        logger.debug('Returning cached Unity event bindings for %s', document.uri);
         return connectedMembers;
     }
+
+    const startTime = performance.now();
 
     const connections = await getConnections(document.uri);
     if (!connections) {
         return [];
     }
 
+    const startParsingTime = performance.now();
+    if (startParsingTime - startTime > 1) {
+        logger.debug('Retrieved Unity event bindings in %d milliseconds', startParsingTime - startTime);
+    }
+
     let gotMembers = false;
     if (workspace.getConfiguration('unity-event-lens').get('useAccurateParsing') === true) {
         try {
+            logger.debug('Parsing C# file %s via ANTLR parser...', document.uri);
             connectedMembers = new CSharpParsingConnectionRangeFinder().findConnectedMembers(document, connections);
             gotMembers = true;
         } catch (error) {
-            logger.warn('Unable to parse C# file %s', document.uri, error);
+            logger.warn('Unable to parse C# file %s: %s', document.uri, error);
         }
     }
 
     if (!gotMembers) {
+        logger.debug('Parsing C# file %s via regular expressions...', document.uri);
         connectedMembers = new RegexMatchingConnectionRangeFinder().findConnectedMembers(document, connections);
     }
 
     documentUri = document.uri;
     version = document.version;
+    sceneVersion = unityMetadataVersion;
+
+    const endTime = performance.now();
+    logger.debug('Parsed %s and found Unity event bindings in %d milliseconds', document.uri, endTime - startParsingTime);
+
     return connectedMembers;
 }
 

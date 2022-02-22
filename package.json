@@ -4,6 +4,10 @@
   "description": "Shows references to your methods from events like button clicks",
   "version": "1.0.0",
   "icon": "images/icon.png",
+  "author": {
+    "name": "David Gileadi"
+  },
+  "publisher": "dgileadi",
   "homepage": "https://github.com/dgileadi/unity-event-lens",
   "bugs": {
     "url": "https://github.com/dgileadi/unity-event-lens/issues"
@@ -26,10 +30,20 @@
     "configuration": {
       "title": "Unity Event Lens",
       "properties": {
+        "unity-event-lens.onlyScenesInBuildSettings": {
+          "type": "boolean",
+          "default": true,
+          "description": "Only look for event bindings in scenes that are listed in the Unity Editor’s Build Settings."
+        },
         "unity-event-lens.useAccurateParsing": {
           "type": "boolean",
           "default": false,
-          "description": "Use the slow-but-accurate method of parsing C# files"
+          "description": "Use the slow-but-accurate method of parsing C# files."
+        },
+        "unity-event-lens.debugLogging": {
+          "type": "boolean",
+          "default": false,
+          "description": "Turn on debug logging for this extension."
         }
       }
     }

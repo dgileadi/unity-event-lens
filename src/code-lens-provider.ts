@@ -24,7 +24,7 @@ export default class UnityEventReferencesCodeLensProvider implements CodeLensPro
 
 export function showEventReferences(member: ConnectedMember) {
     if (!window.activeTextEditor) { return; }
-    const editor = window.activeTextEditor.selection = new Selection(member.range.start, member.range.start);
+    window.activeTextEditor.selection = new Selection(member.range.start, member.range.start);
     if (member.connections.length > 0) {
         commands.executeCommand('editor.action.showHover');
     }
