@@ -2,8 +2,16 @@
   "name": "unity-event-lens",
   "displayName": "Unity Event Lens",
   "description": "Shows references to your methods from events like button clicks",
-  "version": "0.0.1",
-  "icon": "icon.png",
+  "version": "1.0.0",
+  "icon": "images/icon.png",
+  "homepage": "https://github.com/dgileadi/unity-event-lens",
+  "bugs": {
+    "url": "https://github.com/dgileadi/unity-event-lens/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dgileadi/unity-event-lens.git"
+  },
   "engines": {
     "vscode": "^1.64.0"
   },
